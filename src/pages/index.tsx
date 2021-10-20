@@ -1,5 +1,7 @@
 import { GetStaticProps } from 'next';
 
+import { FiCalendar, FiUser } from "react-icons/fi";
+
 import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
@@ -26,7 +28,67 @@ interface HomeProps {
 
 export default function Home() {
   return (
-    <h1>teste</h1>
+    <main className={styles.container}>
+      <div className={styles.posts}>
+        <a>
+          <h1>Como utilizar Hooks</h1>
+          <p>Pensando em sincronização em vez de ciclos de vida.</p>
+          <div className={styles.info}>
+            <div>
+              <FiCalendar />
+              <span>15 Mar 2021</span>
+            </div>
+            <div>
+              <FiUser />
+              <span>15 Mar 2021</span>
+            </div>
+          </div>
+        </a>
+        <a>
+          <h1>Como utilizar Hooks</h1>
+          <p>Pensando em sincronização em vez de ciclos de vida.</p>
+          <div className={styles.info}>
+            <div>
+              <FiCalendar />
+              <span>15 Mar 2021</span>
+            </div>
+            <div>
+              <FiUser />
+              <span>15 Mar 2021</span>
+            </div>
+          </div>
+        </a>
+        <a>
+          <h1>Como utilizar Hooks</h1>
+          <p>Pensando em sincronização em vez de ciclos de vida.</p>
+          <div className={styles.info}>
+            <div>
+              <FiCalendar />
+              <span>15 Mar 2021</span>
+            </div>
+            <div>
+              <FiUser />
+              <span>15 Mar 2021</span>
+            </div>
+          </div>
+        </a>
+        <a>
+          <h1>Como utilizar Hooks</h1>
+          <p>Pensando em sincronização em vez de ciclos de vida.</p>
+          <div className={styles.info}>
+            <div>
+              <FiCalendar />
+              <span>15 Mar 2021</span>
+            </div>
+            <div>
+              <FiUser />
+              <span>15 Mar 2021</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <button>Carregar mais posts</button>
+    </main>
   )
 }
 
