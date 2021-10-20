@@ -1,5 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 
+import { FiCalendar, FiUser, FiClock } from "react-icons/fi";
+
 import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
@@ -26,9 +28,31 @@ interface PostProps {
   post: Post;
 }
 
-// export default function Post() {
-//   // TODO
-// }
+export default function Post() {
+  return (
+    <>
+      <img className={styles.banner} src="/banner.png" alt="banner" />
+      <div className={styles.container}>
+        <h1>Criando um app CRA do zero</h1>
+
+        <div className={styles.info}>
+            <div>
+              <FiCalendar />
+              <span>15 Mar 2021</span>
+            </div>
+            <div>
+              <FiUser />
+              <span>15 Mar 2021</span>
+            </div>
+            <div>
+              <FiClock />
+              <span>15 Mar 2021</span>
+            </div>
+          </div>
+      </div>
+    </>
+  )
+}
 
 // export const getStaticPaths = async () => {
 //   const prismic = getPrismicClient();
