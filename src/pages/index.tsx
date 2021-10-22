@@ -1,4 +1,5 @@
 import { GetStaticProps } from 'next';
+import Link from 'next/link';
 
 import { FiCalendar, FiUser } from "react-icons/fi";
 import Prismic from '@prismicio/client';
@@ -10,6 +11,7 @@ import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import React from 'react';
 
 interface Post {
   uid?: string;
@@ -35,20 +37,22 @@ export default function Home({ postsPagination }: HomeProps) {
     <main className={styles.container}>
       <div className={styles.posts}>
         {postsPagination.results.map(post => (
-          <a key={post.uid}>
-          <h1>{post.data.title}</h1>
-          <p>{post.data.subtitle}</p>
-          <div className={styles.info}>
-            <div>
-              <FiCalendar />
-              <span>{post.first_publication_date}</span>
-            </div>
-            <div>
-              <FiUser />
-              <span>{post.data.author}</span>
-            </div>
-          </div>
-        </a>
+          <Link key={post.uid} href={`/post/${post.uid}`}>
+            <a>
+              <h1>{post.data.title}</h1>
+              <p>{post.data.subtitle}</p>
+              <div className={styles.info}>
+                <div>
+                  <FiCalendar />
+                  <span>{post.first_publication_date}</span>
+                </div>
+                <div>
+                  <FiUser />
+                  <span>{post.data.author}</span>
+                </div>
+              </div>
+            </a>
+          </Link>
         ))}
       </div>
       <button>Carregar mais posts</button>
