@@ -83,7 +83,7 @@ export const getStaticProps = async ({ params }) => {
   const { slug } = params;
   const response = await prismic.getByUID('post', String(slug), {});
 
-  console.log(JSON.stringify(response, null, 2));
+  // console.log(JSON.stringify(response, null, 2));
 
   const content = response.data.content.map(content => {
     return {
