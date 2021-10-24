@@ -37,15 +37,19 @@ export default function Home({ postsPagination }: HomeProps) {
   console.log(postsPagination);
 
   const [posts, setPosts] = useState<Post[]>(postsPagination.results);
+  const [nextPage, setNextpage] = useState<string | null>(postsPagination.next_page);
 
   function loadMorePosts(link: string) {
     fetch(link)
       .then(response => {
+        console.log("post: ", response)
         return response.json()
       })
       .then(post => {
-        console.log("post: ", post.results)
+        console.log("post: ", post)
         const { first_publication_date, data, uid } = post.results[0];
+
+        setNextpage(post.next_page);
 
         const newPost = {
           uid,
@@ -87,7 +91,7 @@ export default function Home({ postsPagination }: HomeProps) {
           </Link>
         ))}
       </div>
-      {!!postsPagination.next_page && (
+      {!!nextPage && (
         <button onClick={() => loadMorePosts(postsPagination.next_page)}>
           Carregar mais posts
         </button>
