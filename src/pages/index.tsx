@@ -11,7 +11,8 @@ import { getPrismicClient } from '../services/prismic';
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import React from 'react';
+import React, { useState } from 'react';
+import Post from './post/[slug]';
 
 interface Post {
   uid?: string;
@@ -33,10 +34,41 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps) {
+  console.log(postsPagination);
+
+  const [posts, setPosts] = useState<Post[]>(postsPagination.results);
+
+  function loadMorePosts(link: string) {
+    fetch(link)
+      .then(response => {
+        return response.json()
+      })
+      .then(post => {
+        console.log("post: ", post.results)
+        const { first_publication_date, data, uid } = post.results[0];
+
+        const newPost = {
+          uid,
+          first_publication_date: format(new Date(first_publication_date), 'PP'),
+          data: {
+            title: data.title[0].text,
+            subtitle: data.subtitle[0].text,
+            author: data.author[0].text,
+          }
+        }
+
+        const postList = [];
+
+        postList.push(newPost);
+
+        setPosts([...posts, ...postList]);
+      })
+  }
+
   return (
     <main className={styles.container}>
       <div className={styles.posts}>
-        {postsPagination.results.map(post => (
+        {posts.map(post => (
           <Link key={post.uid} href={`/post/${post.uid}`}>
             <a>
               <h1>{post.data.title}</h1>
@@ -55,7 +87,11 @@ export default function Home({ postsPagination }: HomeProps) {
           </Link>
         ))}
       </div>
-      <button>Carregar mais posts</button>
+      {!!postsPagination.next_page && (
+        <button onClick={() => loadMorePosts(postsPagination.next_page)}>
+          Carregar mais posts
+        </button>
+      )}
     </main>
   )
 }
@@ -66,7 +102,7 @@ export const getStaticProps: GetStaticProps = async () => {
     Prismic.predicates.at('document.type', 'post'),
   ], {
     fetch: ['post.title', 'post.subtitle', 'post.author'],
-    pageSize: 100,
+    pageSize: 1,
   });
 
   console.log(JSON.stringify(postsResponse, null, 2))
@@ -74,11 +110,11 @@ export const getStaticProps: GetStaticProps = async () => {
   const results = postsResponse.results.map(post => {
     return {
       uid: post.uid,
-      first_publication_date: format(new Date(post.first_publication_date), 'PP', { locale: pt }),
+      first_publication_date: format(new Date(post.first_publication_date), 'PP'),
       data: {
-        title: RichText.asText(post.data.title),
-        subtitle: RichText.asText(post.data.subtitle),
-        author: RichText.asText(post.data.author),
+        title: post.data.title[0].text,
+        subtitle: post.data.subtitle[0].text,
+        author: post.data.author[0].text,
       }
     }
   })
