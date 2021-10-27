@@ -36,8 +36,6 @@ yarn dev
 - src/styles/common.module.scss
 
 
-Todos esses arquivos foram migrados de Javascript para Typescript. Além disso, os arquivos que possuíam componentes em classe foram migrados para componentes funcionais.
-
 ### Como a aplicação ficou no final
 
 ![home](https://user-images.githubusercontent.com/26827923/138990062-839506fd-9e33-494b-883f-d01f481e5565.png)
