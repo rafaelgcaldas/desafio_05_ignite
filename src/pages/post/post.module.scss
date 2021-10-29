@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
 
-  margin-bottom: 4rem;
+  margin-bottom: 1rem;
 
   div {
     display: flex;
@@ -37,6 +37,12 @@
   }
 }
 
+.editDate {
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-bottom: 4rem;
+}
+
 .banner {
   width: 100%;
   height: 400px;
@@ -46,6 +52,10 @@
 }
 
 .content {
+  padding-bottom: 4rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid var(--body);
+
   h1 {
     font-weight: bold;
     margin: 2rem 0;
@@ -55,5 +65,27 @@
     font-size: 1.25rem;
     line-height: 2rem;
     margin-bottom: 1.5rem;
+  }
+}
+
+.pages {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  div {
+    h4 {
+      font-size: 1.125rem;
+    }
+
+    p {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--highlight);
+    }
+
+    & + div {
+      text-align: right;
+    }
   }
 }

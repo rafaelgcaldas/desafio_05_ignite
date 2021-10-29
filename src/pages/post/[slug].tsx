@@ -88,6 +88,10 @@ export default function Post({ post }: PostProps) {
           </div>
         </div>
 
+        <div className={styles.editDate}>
+          <p>*editado em 19 de mar 2021, às 15:49</p>
+        </div>
+
         <div className={styles.content}>
           {post.data.content.map(item => (
             <div key={item.heading}>
@@ -97,6 +101,17 @@ export default function Post({ post }: PostProps) {
               ))}
             </div>
           ))}
+        </div>
+
+        <div className={styles.pages}>
+          <div>
+            <h4>Como utilizar Hooks</h4>
+            <p>Post anterior</p>
+          </div>
+          <div>
+            <h4>Criando um app CRA do Zero</h4>
+            <p>Próximo Post</p>
+          </div>
         </div>
       </div>
     </>
