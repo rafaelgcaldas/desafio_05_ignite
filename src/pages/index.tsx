@@ -1,5 +1,6 @@
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
+import Head from 'next/head';
 
 import { FiCalendar, FiUser } from "react-icons/fi";
 import Prismic from '@prismicio/client';
@@ -66,40 +67,45 @@ export default function Home({ postsPagination }: HomeProps) {
   }
 
   return (
-    <main className={styles.container}>
-      <div className={styles.posts}>
-        {posts.map(post => (
-          <Link key={post.uid} href={`/post/${post.uid}`}>
-            <a>
-              <h1>{post.data.title}</h1>
-              <p>{post.data.subtitle}</p>
-              <div className={styles.info}>
-                <div>
-                  <FiCalendar />
-                  <span>
-                  {format(
-                      new Date(post.first_publication_date),
-                      'dd MMM yyyy',
-                      {
-                        locale: pt,
-                      }
-                    )}</span>
+    <>
+      <Head>
+        <title>Home - Spacetraveling</title>
+      </Head>
+      <main className={styles.container}>
+        <div className={styles.posts}>
+          {posts.map(post => (
+            <Link key={post.uid} href={`/post/${post.uid}`}>
+              <a>
+                <h1>{post.data.title}</h1>
+                <p>{post.data.subtitle}</p>
+                <div className={styles.info}>
+                  <div>
+                    <FiCalendar />
+                    <span>
+                    {format(
+                        new Date(post.first_publication_date),
+                        'dd MMM yyyy',
+                        {
+                          locale: pt,
+                        }
+                      )}</span>
+                  </div>
+                  <div>
+                    <FiUser />
+                    <span>{post.data.author}</span>
+                  </div>
                 </div>
-                <div>
-                  <FiUser />
-                  <span>{post.data.author}</span>
-                </div>
-              </div>
-            </a>
-          </Link>
-        ))}
-      </div>
-      {!!nextPage && (
-        <button onClick={() => loadMorePosts()}>
-          Carregar mais posts
-        </button>
-      )}
-    </main>
+              </a>
+            </Link>
+          ))}
+        </div>
+        {!!nextPage && (
+          <button onClick={() => loadMorePosts()}>
+            Carregar mais posts
+          </button>
+        )}
+      </main>
+    </>
   )
 }
 

@@ -1,5 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
+import Head from 'next/head';
 
 import Prismic from '@prismicio/client';
 import { FiCalendar, FiUser, FiClock } from "react-icons/fi";
@@ -14,6 +16,7 @@ import styles from './post.module.scss';
 import { UtterancesComments } from '../../components/UtterancesComments';
 
 interface Post {
+  uid?: string;
   first_publication_date: string | null;
   data: {
     title: string;
@@ -32,9 +35,15 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  previousPost?: Post;
+  nextPost?: Post;
+  preview: boolean;
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, previousPost, nextPost, preview }: PostProps) {
+
+  console.log("aaaa: ", { previousPost, nextPost })
+
   const router = useRouter();
 
   const wordsPerMinute = 200;
@@ -63,6 +72,9 @@ export default function Post({ post }: PostProps) {
   
   return (
     <>
+      <Head>
+        <title>{post.data.title} - Spacetraveling</title>
+      </Head>
       <img className={styles.banner} src="/banner.png" alt="banner" />
       <div className={styles.container}>
         <h1>{post.data.title}</h1>
@@ -105,15 +117,19 @@ export default function Post({ post }: PostProps) {
           ))}
         </div>
 
-        <div className={styles.pages}>
-          <div>
-            <h4>Como utilizar Hooks</h4>
-            <p>Post anterior</p>
-          </div>
-          <div>
-            <h4>Criando um app CRA do Zero</h4>
-            <p>Próximo Post</p>
-          </div>
+        <div className={styles.pages} style={{ flexDirection: previousPost ? 'row' : 'row-reverse' }}>
+          {previousPost && (
+            <a href={`/post/${previousPost?.uid}`}>
+              <h4>{previousPost?.data?.title}</h4>
+              <p>Post anterior</p>
+            </a>
+          )}
+          {nextPost && (
+            <a href={`/post/${nextPost?.uid}`}>
+              <h4>{nextPost?.data?.title}</h4>
+              <p>Próximo Post</p>
+            </a>
+          )}
         </div>
       </div>
       <UtterancesComments />
@@ -127,7 +143,7 @@ export const getStaticPaths = async () => {
     [Prismic.predicates.at('document.type', 'post2')],
     {
       fetch: [],
-      pageSize: 1,
+      pageSize: 100,
     }
   );
 
@@ -143,10 +159,48 @@ export const getStaticPaths = async () => {
   }
 };
 
-export const getStaticProps: GetStaticProps  = async ({ params }) => {
+export const getStaticProps: GetStaticProps  = async ({ 
+  params,
+  preview = false,
+  previewData = {} 
+}) => {
   const prismic = getPrismicClient();
   const { slug } = params;
-  const response = await prismic.getByUID('post2', String(slug), {});
+
+  const response = await prismic.getByUID('post2', String(slug), {
+    ref: previewData?.ref ?? null,
+  });
+
+  if (!response) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  const previousResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'post2')],
+    {
+      fetch: ['post2.title'],
+      after: response.id,
+      orderings: '[document.first_publication_date desc]',
+      pageSize: 1,
+      ref: previewData?.ref ?? null,
+    }
+  );
+
+  const nextResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'post2')],
+    {
+      fetch: ['post2.title'],
+      after: response.id,
+      orderings: '[document.first_publication_date]',
+      pageSize: 1,
+      ref: previewData?.ref ?? null,
+    }
+  );
 
   const post = {
     uid: response.uid,
@@ -164,8 +218,21 @@ export const getStaticProps: GetStaticProps  = async ({ params }) => {
 
   return {
     props: {
-      post
+      post,
+      previousPost: previousResponse.results.length
+        ? {
+            uid: previousResponse.results[0].uid,
+            data: { title: previousResponse.results[0].data.title },
+          }
+        : null,
+      nextPost: nextResponse.results.length
+        ? {
+            uid: nextResponse.results[0].uid,
+            data: { title: nextResponse.results[0].data.title },
+          }
+        : null,
+      preview
     },
-    revalidate: 60 * 5, // 5min
+    revalidate: 60 * 10, // 10min
   }
 };
