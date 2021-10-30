@@ -14,10 +14,12 @@ import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 
 import { UtterancesComments } from '../../components/UtterancesComments';
+import { PreviewButton } from '../../components/PreviewButton';
 
 interface Post {
   uid?: string;
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -41,10 +43,9 @@ interface PostProps {
 }
 
 export default function Post({ post, previousPost, nextPost, preview }: PostProps) {
-
-  console.log("aaaa: ", { previousPost, nextPost })
-
   const router = useRouter();
+
+  const hasEdited = post.first_publication_date !== post.last_publication_date;
 
   const wordsPerMinute = 200;
   const totalWords = Math.round(
@@ -102,9 +103,19 @@ export default function Post({ post, previousPost, nextPost, preview }: PostProp
           </div>
         </div>
 
-        <div className={styles.editDate}>
-          <p>*editado em 19 de mar 2021, às 15:49</p>
-        </div>
+        {hasEdited && (
+          <div className={styles.editDate}>
+            <p>
+              {format(
+                new Date(post.last_publication_date),
+                `'* editado em 'dd MMM yyyy', às 'HH:mm`,
+                {
+                  locale: pt,
+                }
+              )}
+            </p>
+          </div>
+        )}
 
         <div className={styles.content}>
           {post.data.content.map(item => (
@@ -131,8 +142,9 @@ export default function Post({ post, previousPost, nextPost, preview }: PostProp
             </a>
           )}
         </div>
+        <UtterancesComments />
+        {preview && <PreviewButton />}
       </div>
-      <UtterancesComments />
     </>
   )
 }
@@ -180,6 +192,8 @@ export const getStaticProps: GetStaticProps  = async ({
     };
   }
 
+  console.log("response: ", response)
+
   const previousResponse = await prismic.query(
     [Prismic.predicates.at('document.type', 'post2')],
     {
@@ -205,6 +219,7 @@ export const getStaticProps: GetStaticProps  = async ({
   const post = {
     uid: response.uid,
     first_publication_date: response.first_publication_date,
+    last_publication_date: response.last_publication_date,
     data: {
       author: response.data.author,
       title: response.data.title,

@@ -14,6 +14,7 @@ import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import React, { useEffect, useState } from 'react';
 import Post from './post/[slug]';
+import { PreviewButton } from '../components/PreviewButton';
 
 interface Post {
   uid?: string;
@@ -32,9 +33,10 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ postsPagination, preview }: HomeProps) {
   const [posts, setPosts] = useState<Post[]>(postsPagination.results);
   const [nextPage, setNextpage] = useState<string | null>(postsPagination.next_page);
 
@@ -104,19 +106,21 @@ export default function Home({ postsPagination }: HomeProps) {
             Carregar mais posts
           </button>
         )}
+        {preview && <PreviewButton />}
       </main>
     </>
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps = async ({ preview = false, previewData = null }) => {
   const prismic = getPrismicClient();
   const response = await prismic.query(
     [Prismic.predicates.at('document.type', 'post2')],
     {
       fetch: ['post.title', 'post.subtitle', 'post.author'],
       pageSize: 1,
-      orderings: '[document.first_publication_date]'
+      orderings: '[document.first_publication_date]',
+      ref: previewData?.ref ?? null
     }
   );
 
@@ -136,6 +140,7 @@ export const getStaticProps: GetStaticProps = async () => {
         next_page: response.next_page,
         results: posts,
       },
+      preview
     },
     revalidate: 60 * 5, // 5min
   };
